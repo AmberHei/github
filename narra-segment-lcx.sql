@@ -118,5 +118,6 @@ FROM
 WHERE
     uid NOT IN (SELECT user_id FROM daily_access WHERE total_access_day <= 3)
 GROUP BY
-        1
-ORDER BY 1
+    1
+ORDER BY
+    1
