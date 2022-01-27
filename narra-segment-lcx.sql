@@ -1,9 +1,19 @@
+/*
 CREATE TEMPORARY FUNCTION START_AT() AS(
-    DATE("2021-01-01")
+    DATE("2022-01-01")
 );
 CREATE TEMPORARY FUNCTION END_AT() AS(
-    DATE("2021-01-08")
+    DATE("2022-01-08")
 );
+*/
+
+CREATE TEMPORARY FUNCTION START_AT() AS(
+    DATE_SUB(CURRENT_DATE('+09:00'), INTERVAL 60 DAY)
+);
+CREATE TEMPORARY FUNCTION END_AT() AS(
+    DATE_SUB(CURRENT_DATE('+09:00'), INTERVAL 1 DAY)
+);
+
 
 WITH
 daily_access AS(
@@ -60,6 +70,7 @@ LEFT JOIN
         `30_common_summary.session_summary`
     WHERE
         date between START_AT() AND END_AT()
+        AND totalSessionTime >= 0 --0秒以上をカウント
     GROUP BY
         1
     )b
@@ -68,9 +79,9 @@ ON
 ),
 hourly_coin_per_uid AS (
 SELECT
-    user_id,
-    SUM(amount) AS amount,
-    count(amount) AS pay_count
+    userId AS user_id,
+    SUM(amtJPY) AS amount,
+    count(amtJPY) AS pay_count
 FROM
     `30_common_summary.transaction_summary`
 WHERE
